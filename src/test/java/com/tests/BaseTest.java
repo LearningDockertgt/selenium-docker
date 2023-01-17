@@ -1,7 +1,9 @@
 package com.tests;
 
+import org.openqa.selenium.MutableCapabilities;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.testng.ITestContext;
@@ -17,7 +19,7 @@ public class BaseTest {
 
     @BeforeTest
     public void setupDriver(ITestContext ctx) throws MalformedURLException {
-        // BROWSER => chrome / firefox
+/*        // BROWSER => chrome / firefox
         // HUB_HOST => localhost / 10.0.1.3 / hostname
         String Node = "http://localhost:4444";
         DesiredCapabilities caps = new DesiredCapabilities();
@@ -27,8 +29,30 @@ public class BaseTest {
         options.addArguments("--disable-gpu");
         options.addArguments("--window-size=1920,1080");
        // caps.setBrowserName("chrome");
-        caps.setBrowserName("chrome");
-        driver = new RemoteWebDriver(new URL(Node), caps);
+        caps.setBrowserName("firefox");
+        driver = new RemoteWebDriver(new URL(Node), caps);*/
+        // BROWSER => chrome / firefox
+        // HUB_HOST => localhost / 10.0.1.3 / hostname
+
+        String host = "localhost";
+        MutableCapabilities dc;
+
+        if(System.getProperty("BROWSER") != null &&
+                System.getProperty("BROWSER").equalsIgnoreCase("firefox")){
+            dc = new FirefoxOptions();
+        }else{
+            dc = new ChromeOptions();
+        }
+
+        if(System.getProperty("HUB_HOST") != null){
+            host = System.getProperty("HUB_HOST");
+        }
+
+        String testName = ctx.getCurrentXmlTest().getName();
+
+        String completeUrl = "http://" + host + ":4444/wd/hub";
+        dc.setCapability("name", testName);
+        this.driver = new RemoteWebDriver(new URL(completeUrl), dc);
         /* The execution happens on the Selenium Grid with the address mentioned earlier */
        /* String host = "localhost";
         DesiredCapabilities dc;
